@@ -1,0 +1,1 @@
+g++ scanner.cpp ../utils/redis_tools.cpp -I../ -I/usr/include/hiredis/ -ltins -lhiredis -lssl -lcrypto -lpthread
