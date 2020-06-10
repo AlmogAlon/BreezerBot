@@ -1,0 +1,116 @@
+{% extends "base_tables.html" %}
+
+{% block menusnapshot %}
+<li class="active">
+{% endblock menusnapshot %}
+
+{% block content %}
+ <div class="content-header">
+
+    <div class="row">
+    <div class="col-sm-6">
+        <div class="header-section">
+            <h1>Access Points</h1>
+        </div>
+    </div>
+        </div>
+</div>
+    <!-- Table Styles Block -->
+    <div class="block full">
+
+
+        <div class="table-responsive">
+        <table id="aps" class="table-responsive table table-striped table-bordered table-vcenter table-hover">
+
+        <thead>
+            <tr>
+                {% for i in header %}
+                    <th>{{ i | safe}}</th>
+                {% endfor %}
+
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for row in data %}
+                <tr>
+                    {% for item in row %}
+                        <td>{{item | safe}}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+        <div class="row">
+            {% block actions %}
+
+            {% endblock actions %}
+        </div>
+    </div>
+
+{% endblock content %}
+
+
+
+{% block onreadyscripts %}
+    <script>
+
+        function fetchTable() {
+
+            // charts = one minute
+            let UPDATE = 1000;
+
+            $(document).ready(function() {
+            var table = $('#aps').DataTable(
+                    {
+                        language: { search: "",searchPlaceholder: "Search" },
+                        paging: false,
+                        stateSave: true,
+                        ajax: {
+
+                 url: "/aps/list",
+                 dataSrc: ''
+             },
+
+            columnDefs: [ { "type": "formatted-num", "targets": [ 3 ] } ],
+		    colReorder: {
+			realtime: true
+		    },
+            "aoColumns" : [
+                {data : 'ssid' ,"sTitle": "SSID"},
+                {data : 'rssi' ,"sTitle": "RSSI"},
+                {data : 'bssid' ,"sTitle": "BSSID"},
+                {data : 'timestamp' ,"sTitle": "Time"}
+
+		    ]
+	        } );
+
+            $('.dataTables_filter input').addClass('form-control');
+            /*
+            $('#aps tbody').on('click', 'tr', function () {
+                var mac = table.row(this).data()['mac'];
+                window.location = '/nanosniper/get/client/' + mac;
+            } );
+            */
+
+            } );
+
+            setInterval( function () {
+                $('#aps').DataTable().ajax.reload(null, false);
+            }, UPDATE  );
+
+
+        }
+
+        $(document).ready(function() {
+            console.log("ready");
+            fetchTable();
+
+        });
+
+    </script>
+{% endblock onreadyscripts %}
+
+
