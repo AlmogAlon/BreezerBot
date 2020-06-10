@@ -13,7 +13,7 @@ class BackendAgent:
         self.distance = None
 
     def get_last_aps(self):
-        return self.redis.lpop("scan")
+        return self.redis.hgetall("scanner")
 
     def get_distance(self):
         return self.redis.lpop("distance")

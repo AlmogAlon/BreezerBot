@@ -1,0 +1,49 @@
+{% extends "base_tables.html" %}
+
+{% block menusnapshot %}
+<li class="active">
+{% endblock menusnapshot %}
+
+{% block content %}
+ <div class="content-header">
+
+    <div class="row">
+    <div class="col-sm-6">
+        <div class="header-section">
+            <h1>Map</h1>
+        </div>
+    </div>
+        </div>
+</div>
+    <!-- Table Styles Block -->
+    <div class="block full">
+
+
+        <div class="table-responsive">
+
+
+            <img src="/static/assets/img/map.png" width="100%" alt="ismap">
+
+
+    </div>
+
+{% endblock content %}
+
+
+
+{% block onreadyscripts %}
+  <script>
+
+$(document).ready(function() {
+    $("img").on("click", function(event) {
+        var x = event.pageX - this.offsetLeft;
+        var y = event.pageY - this.offsetTop;
+        console.log("X Coordinate: " + x + " Y Coordinate: " + y);
+    });
+});
+
+
+</script>
+{% endblock onreadyscripts %}
+
+

@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect
 from backend_agent import BackendAgent
 import logging
 import json
+import arrow
 
 # LOGGER
 LOGGING_LOGGER_NAME = 'web_ui'
@@ -22,16 +23,32 @@ retry = True
 
 @app.route('/aps')
 def all_clients():
-    title = 'Environment'
-    return render_template('access_points.html', title=title)
+    return render_template('access_points.html')
+
+
+@app.route('/')
+def system_status():
+    return render_template('system_status.html')
+
+
+@app.route('/map')
+def map():
+    return render_template('map.html')
 
 
 @app.route('/aps/list')
 def homing_ajax():
-    agent.get_last_aps()
+    network_list = []
+    ap_list = agent.get_last_aps()
+    for ap in ap_list:
+        ap_bssid = ap.split('-')[0]
+        ap_name = ap.split('-')[1]
+        rssi = ap_list[ap].split(',')[0]
+        timestamp = arrow.get(float(ap_list[ap].split(',')[1]) / 1000).format("DD/MM/YYYY HH:mm:SS")
 
-    network_list = [{'ssid': 'Gita Technologies', 'rssi': '-20',
-                     'bssid': 'AA:AA:AA:AA:AA:AA', 'timestamp': '1111'}]
+        network_list.append({'ssid': ap_name, 'rssi': rssi,
+                             'bssid': ap_bssid.upper(), 'timestamp': timestamp})
+
     response = app.response_class(
         response=json.dumps(network_list),
         status=200,
@@ -45,60 +62,6 @@ def statistics():
     print str(agent.get_distance())
     return json.dumps(agent.get_distance())
 
-
-
-@app.route('/')
-def system_status():
-
-    title = 'Dashboard'
-
-    # getting data from agent
-    """
-
-    known_clients = data.known_clients
-    visible_aps = data.visible_aps
-    visible_associated = data.visible_associated
-    visible_unassociated = data.visible_unassociated
-
-    state = data.mission
-
-    if data.gps_fix > 0 :
-        gps_fix = "GPS Fixed"
-    else:
-        gps_fix = "GPS is not fixed"
-
-    battery = data.battery_percentage
-    power = data.power_source
-    mobile = data.mobile
-    tag_battery = ""
-
-    if 0 <= battery < 25:
-        tag_battery = str(battery) + "% <i class='fa fa-battery-empty'></i>" + " </div>"
-
-    elif 25 <= battery < 50:
-        tag_battery = str(battery) + "% <i class='fa fa-battery-quarter'></i>" + " </div>"
-
-    elif 50 <= battery < 75:
-        tag_battery = str(battery) + "% <i class='fa fa-battery-three-quarters'></i>" + " </div>"
-
-    elif 75 <= battery <= 100:
-        tag_battery = str(battery) + "% <i class='fa fa-battery-full'></i>" + " </div>"
-
-    tag_top_battery = "<a href='javascript:void(0)' onclick=''>" + tag_battery
-    tag = ""
-
-    if power == 0:
-        # Internal Battery
-        tag = "<i class='fa fa-plug'></i>" + tag + " "
-
-    if mobile != "":
-        # Got Blue tooth device connected
-        tag = tag + "<i class='fa fa-bluetooth-b'></i>" + " "
-
-    sensor_comps = tag + tag_top_battery
-    """
-    distance = agent.distance
-    return render_template('system_status.html', distance=distance)
 
 
 if '__main__' == __name__:
