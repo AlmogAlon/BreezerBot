@@ -20,9 +20,9 @@
 
 
         <div class="table-responsive">
+<canvas id="viewport" style="display:block"></canvas>
 
 
-            <img src="/static/assets/img/map.png" width="100%" alt="ismap">
 
 
     </div>
@@ -34,13 +34,53 @@
 {% block onreadyscripts %}
   <script>
 
+    window.addEventListener('resize', resizeCanvas, false);
+    var canvas = document.getElementById('viewport');
+    const context = canvas.getContext("2d");
+    const dots = [];
+
+    function draw_image()
+    {
+      var base_image = new Image();
+
+      base_image.src = '/static/assets/img/map.png';
+
+      base_image.onload = function(){
+          canvas.style.height = (base_image.height / base_image.width) * canvas.width;
+          canvas.height = (base_image.height / base_image.width) * canvas.width;
+
+          context.drawImage(base_image, 0, 0,canvas.width, (base_image.height / base_image.width) * canvas.width );
+      }
+    }
+
+    function resizeCanvas() {
+  // Make it visually fill the positioned parent
+  canvas.style.width ='100%';
+
+  // ...then set the internal size to match
+  canvas.width  = canvas.offsetWidth;
+            draw_image();
+    }
+
+    resizeCanvas();
+
+
 $(document).ready(function() {
-    $("img").on("click", function(event) {
+    $("canvas").on("click", function(event) {
         var x = event.pageX - this.offsetLeft;
         var y = event.pageY - this.offsetTop;
+
+        dots.push({'x': x, 'y': y});
+        console.log(dots);
+
+        context.beginPath();
+        context.arc(x, y, canvas.width/100, 0, 2 * Math.PI);
+        context.stroke();
+
         console.log("X Coordinate: " + x + " Y Coordinate: " + y);
     });
 });
+
 
 
 </script>
