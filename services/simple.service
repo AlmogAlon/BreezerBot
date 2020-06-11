@@ -1,0 +1,12 @@
+[Unit]
+Description=Tcp Listener
+Wants=network.target
+
+[Service]
+Type=simple
+User=pi
+ExecStart=python /home/pi/webapp/web_ui.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

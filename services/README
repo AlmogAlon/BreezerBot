@@ -1,0 +1,13 @@
+How to install a new service
+
+1. copy simple.service to /etc/systemd/system
+2. sudo systemctl daemon-reload
+3. sudo systemctl enable simple.service
+
+manage service:
+sudo systemctl status simple
+sudo systemctl start simple
+sudo systemctl stop simple
+
+logging:
+journalctl -u simple.service -f
