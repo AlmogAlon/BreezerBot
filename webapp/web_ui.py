@@ -21,6 +21,9 @@ app.debug = False
 retry = True
 
 
+
+
+
 @app.route('/aps')
 def all_clients():
     return render_template('access_points.html')
@@ -32,7 +35,7 @@ def system_status():
 
 
 @app.route('/map')
-def map():
+def map_template():
     return render_template('map.html')
 
 
@@ -56,12 +59,23 @@ def homing_ajax():
     )
     return response
 
+@app.route('/record_location', methods=['POST'])
+def record_location():
+
+    json_data = request.get_json()
+    print json_data
+    x = int(json_data['x'])
+    y = int(json_data['y'])
+
+    if agent.record_location({'x': x, 'y': y}):
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+    return json.dumps({'success': False}), 400, {'ContentType': 'application/json'}
+
 
 @app.route('/statistics')
 def statistics():
     print str(agent.get_distance())
     return json.dumps(agent.get_distance())
-
 
 
 if '__main__' == __name__:
