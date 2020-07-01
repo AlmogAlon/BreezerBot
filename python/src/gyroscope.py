@@ -57,7 +57,11 @@ class Gyroscope:
             mpu_int_status = self.mpu.get_int_status()
             # If overflow is detected by status or fifo count we want to reset
             if (self.FIFO_count == 1024) or (mpu_int_status & 0x10):
-                self.mpu.reset_FIFO()
+                try:
+                    self.mpu.reset_FIFO()
+                    self.FIFO_count = self.mpu.get_FIFO_count()
+                except:
+                    pass
             # Check if fifo data is ready
             elif (mpu_int_status & 0x02):
                 # Wait until packet_size number of bytes are ready for reading, default
@@ -72,7 +76,7 @@ class Gyroscope:
                     continue
                 roll_pitch_yaw = self.mpu.DMP_get_euler_roll_pitch_yaw(quat, grav)
                 return roll_pitch_yaw.z
-    def getAverageYaw(self, t=0.1):
+    def getMedianYaw(self, t=0.2):
         startTime = time.time()
         y=[]
         while True:
@@ -80,6 +84,4 @@ class Gyroscope:
             if time.time() - startTime >= t:
                 break
         y.sort()
-        x=max(1,len(y)/4)
-        print(len(y))
-        return sum(y[x:-x])/len(y[x:-x])
+        return y[len(y)/2]

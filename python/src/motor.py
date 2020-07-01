@@ -1,10 +1,10 @@
 import RPi.GPIO as GPIO
 from time import sleep
 
-left_forward = 21
-left_backwards = 26
-right_forward = 20
-right_backwards = 16
+left_forward = 20
+left_backwards = 16
+right_forward = 21
+right_backwards = 26
 
 class Motor:
     def __init__(self):
@@ -34,7 +34,7 @@ class Motor:
         GPIO.output(left_backwards,GPIO.HIGH)
         GPIO.output(right_backwards,GPIO.HIGH)
     
-    def turnLeft(self,t=0.1):
+    def turnLeft(self,t=0.25):
         GPIO.output(right_backwards,GPIO.LOW)
         GPIO.output(left_forward,GPIO.LOW)
         GPIO.output(right_forward,GPIO.HIGH)
@@ -45,14 +45,14 @@ class Motor:
         GPIO.output(right_forward,GPIO.LOW)
         GPIO.output(left_backwards,GPIO.LOW)
 
-    def turnLeftPWM(self, p=100, t=0.1):
+    def turnLeftPWM(self, p=100, t=0.25):
         self.right_forward_pwm.ChangeDutyCycle(p)
         self.left_backwards_pwm.ChangeDutyCycle(p)
         sleep(t)
         self.right_forward_pwm.ChangeDutyCycle(0)
         self.left_backwards_pwm.ChangeDutyCycle(0)
         
-    def turnRight(self,t=0.1):
+    def turnRight(self,t=0.25):
         GPIO.output(right_forward,GPIO.LOW)
         GPIO.output(left_backwards,GPIO.LOW)
         GPIO.output(left_forward,GPIO.HIGH)
@@ -63,7 +63,7 @@ class Motor:
         GPIO.output(right_forward,GPIO.LOW)
         GPIO.output(left_backwards,GPIO.LOW)
 
-    def turnRightPWM(self, p=100, t=0.1):
+    def turnRightPWM(self, p=100, t=0.25):
         self.left_forward_pwm.ChangeDutyCycle(p)
         self.right_backwards_pwm.ChangeDutyCycle(p)
         sleep(t)
