@@ -8,21 +8,31 @@ class Wheel:
         self.motor = motor.Motor()
         self.gyro = gyroscope.Gyroscope()
 
+	def unwrap(self, previousAngle, currentAngle):
+		if abs(previousAngle - currentAngle) > 180:
+			while currentAngle > previousAngle:
+				currentAngle -= 360
+			while currentAngle < previousAngle:
+				currentAngle += 360
+		return currentAngle
+
     def turn(self, degrees):
         startAngle = self.gyro.getMedianYaw(0.3)
         print('startAngle ' + str(startAngle))
-        endPoint = ((degrees+startAngle+180+360)%360)-180
+        endPoint = self.unwrap(startAngle,degrees+startAngle)
         print('endPoint ' + str(endPoint));
         p = PID(1,0,0,setpoint=endPoint)
         curAngle = startAngle
-        while abs(curAngle - endPoint) > 1:
+        while abs((curAngle - endPoint + 36000)%360) > 1:
             control = p(curAngle)
             print('control ' + str(control))
             d = ((control + 360 + 180) % 360) - 180
             print('d ' + str(d))
             if d>0:
-                self.motor.turnRightPWM(max(20,min(math.floor(d*4),100)),0.1)
+                self.motor.turnRightPWM(max(20,min(math.floor(d),100)),0.4)
             else:
-                self.motor.turnLeftPWM(max(20,min(math.floor(-d*4),100)),0.1)
-            curAngle = self.gyro.getMedianYaw(0.3)
+                self.motor.turnLeftPWM(max(20,min(math.floor(-d),100)),0.4)
+            previousAngle = curAngle
+			curAngle = self.gyro.getMedianYaw(0.3)
+			curAngle = unwrap(previousAngle, curAngle)			
             print('curAngle ' + str(curAngle))
